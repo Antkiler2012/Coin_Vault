@@ -214,14 +214,3 @@ Wishlist: Users can track coins they want to find
 
 Share Feature: Share coin value cards on social media
 
-## Progress
-Here are the changes already made in this repository (short, factual):
-
-- Implemented native tabs layout using Expo Router's NativeTabs (`app/(tabs)/_layout.tsx`).
-- Wired tab icons and haptic press behavior (uses `components/haptic-tab.tsx` and `components/ui/icon-symbol.tsx`).
-- Added a custom floating "liquid glass" JS tab bar at `components/native-tabbar.tsx` (kept as a fallback).  
-  Note: the app layout currently uses `NativeTabs` so iOS shows the system native glass tab bar.
-- Removed excess/commentary text from key files to keep the code concise.
-- Ran TypeScript checks (no type errors) and ran the linter; one non-blocking lint warning remains in `components/native-tabbar.tsx`.
-
-If you want those remaining warnings removed I can either install `expo-blur` so the dynamic import resolves or delete the unused fallback `components/native-tabbar.tsx` file.
