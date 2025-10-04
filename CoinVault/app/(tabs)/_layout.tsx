@@ -18,7 +18,7 @@ export default function TabLayout() {
         <Label>Collection</Label>
        {Platform.select({ 
        ios: <Icon sf={{ default: 'dollarsign.circle', selected: 'dollarsign.circle.fill' }} />, 
-       android: <Icon sf="attach-money" /> 
+       android: <Icon sf="dollarsign.circle" /> 
 })}
 
       </NativeTabs.Trigger>
