@@ -269,7 +269,7 @@ export default function LoadingScreen() {
     <SafeAreaView style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
       <View style={styles.center}>
-        <ActivityIndicator size="large" color="#fff" />
+        <ActivityIndicator size="large" color="#2C2A2A" />
         <ThemedText style={styles.text}>Analyzing your coin...</ThemedText>
         {!!error && <ThemedText style={styles.error}>{error}</ThemedText>}
       </View>
@@ -278,9 +278,9 @@ export default function LoadingScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#2C2A2A' },
+  container: { flex: 1, backgroundColor: '#ffffffff' },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
-  text: { color: '#fff', marginTop: 12 },
+  text: { color: '#2C2A2A', marginTop: 12 },
   error: { color: 'orange', marginTop: 8 },
 })
 

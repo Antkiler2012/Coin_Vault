@@ -4,18 +4,43 @@ import { Inter_400Regular, Inter_700Bold, useFonts } from '@expo-google-fonts/in
 import { LeagueSpartan_400Regular } from '@expo-google-fonts/league-spartan';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
-import { Link } from 'expo-router';
-import { StatusBar } from 'expo-status-bar'; // 👈 add this
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Link, useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import React from 'react';
+import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_700Bold,
     LeagueSpartan_400Regular,
   });
+  const [query, setQuery] = React.useState('');
+  const [searching, setSearching] = React.useState(false);
+  async function onSubmitSearch() {
+    const q = query.trim();
+    if (!q || searching) return;
+    setSearching(true);
+    try {
+      const stats = await querySerpApiStats(q);
+      if (!stats) return;
+      const title = stats.top?.title || q;
+      const avgRaw = typeof stats.avg === 'number' ? stats.avg : null;
+      const { adjustPriceWithGemini } = await import('../../lib/ai');
+      const avgAdjusted = await adjustPriceWithGemini(title, avgRaw);
+      const image = stats.top?.thumbnail || undefined;
+      router.push({ pathname: '/result', params: {
+        title,
+        ...(typeof avgAdjusted === 'number' ? { avg: String(avgAdjusted) } : {}),
+        ...(image ? { image } : {}),
+      }});
+    } finally {
+      setSearching(false);
+    }
+  }
 
   if (!fontsLoaded) {
     return null;
@@ -32,8 +57,18 @@ export default function HomeScreen() {
         <View style={styles.searchRow}>
           <View style={styles.searchBox}>
             <MaterialIcons name="menu" size={22} color="#666" />
-            <ThemedText style={styles.searchText}>Search for coins</ThemedText>
-            <MaterialIcons name="search" size={20} color="#666" />
+            <TextInput
+              value={query}
+              onChangeText={setQuery}
+              onSubmitEditing={onSubmitSearch}
+              placeholder="Search for coins"
+              placeholderTextColor="#666"
+              style={styles.searchInput}
+              returnKeyType="search"
+            />
+            <TouchableOpacity onPress={onSubmitSearch} disabled={searching}>
+              <MaterialIcons name="search" size={20} color="#666" />
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -53,7 +88,7 @@ export default function HomeScreen() {
                 Tap here to identify your coin
               </ThemedText>
 
-              <Link href="/scan" asChild>
+              <Link href="../scan" asChild>
                 <TouchableOpacity style={styles.scanButton} activeOpacity={0.9}>
                   <View style={styles.scanIconBox}>
                     <MaterialIcons name="crop-free" size={14} color="#fff" />
@@ -119,6 +154,7 @@ const styles = StyleSheet.create({
   searchRow: {
     paddingHorizontal: 16,
     width: '100%',
+    
     bottom: 20,
   },
   searchBox: {
@@ -221,4 +257,44 @@ const styles = StyleSheet.create({
     fontSize: 15,
     marginLeft: 6,
   },
+  searchInput: { flex: 1, color: '#666' },
 });
+
+async function querySerpApiStats(search: string): Promise<{
+  avg: number | null,
+  top?: { title?: string, source?: string, price?: number | null, link?: string, thumbnail?: string }
+} | null> {
+  try {
+    const serpKey = process.env.EXPO_PUBLIC_SERPAPI_KEY as string | undefined;
+    if (!serpKey) return null;
+    const params = new URLSearchParams({
+      engine: 'google_shopping',
+      q: search,
+      hl: 'en',
+      gl: 'us',
+      api_key: String(serpKey),
+    });
+    const url = `https://serpapi.com/search.json?${params.toString()}`;
+    const resp = await fetch(url);
+    const json = await resp.json();
+    const results: any[] = json?.shopping_results ?? [];
+    const prices: number[] = results
+      .map((r) => (typeof r?.extracted_price === 'number' ? r.extracted_price : null))
+      .filter((n): n is number => typeof n === 'number');
+    const count = prices.length;
+    const avg = count ? prices.reduce((a, b) => a + b, 0) / count : null;
+    const first = results?.[0];
+    const top = first ? {
+      title: first?.title,
+      source: first?.source,
+      price: typeof first?.extracted_price === 'number' ? first.extracted_price : null,
+      link: first?.product_link,
+      thumbnail: first?.thumbnail,
+    } : undefined;
+    return { avg, top };
+  } catch {
+    return null;
+  }
+}
+
+// onSubmitSearch defined in component for access to state

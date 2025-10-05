@@ -1,4 +1,6 @@
 import { ThemedText } from '@/components/themed-text'
+import { Inter_400Regular, Inter_700Bold, useFonts } from '@expo-google-fonts/inter'
+import { LeagueSpartan_400Regular } from '@expo-google-fonts/league-spartan'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import React, { useMemo, useState } from 'react'
 import { KeyboardAvoidingView, Platform, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
@@ -10,6 +12,15 @@ export default function YearScreen() {
   const id = useMemo(() => (typeof params.id === 'string' ? params.id : undefined), [params.id])
   const [year, setYear] = useState('')
   const [error, setError] = useState<string | null>(null)
+   const [fontsLoaded] = useFonts({
+    Inter_400Regular,
+    Inter_700Bold,
+    LeagueSpartan_400Regular,
+  });
+
+  if (!fontsLoaded) {
+    return null;
+  }
 
   function onSubmit() {
     if (!id) {
@@ -31,7 +42,7 @@ export default function YearScreen() {
       <View style={styles.card}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.center}>
         
-        <ThemedText type="title" style={styles.title}>Enter coin year</ThemedText>
+        <ThemedText type="title" style={styles.title}>Enter your coins year.</ThemedText>
         <TextInput
           value={year}
           onChangeText={setYear}
@@ -53,40 +64,50 @@ export default function YearScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffffff', alignItems: 'center',  },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
-  title: { color: '#666', marginBottom: 12, textAlign: 'center' ,},
+  container: { flex: 1, backgroundColor: "#ffffffff", alignItems: "center" },
+  center: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 24,
+  },
+  title: { color: "#2C2A2A", marginBottom: 12, textAlign: "center", fontFamily: 'Inter_medium', fontWeight: '400', fontSize: 20, width: 200 },
   input: {
     width: 160,
     height: 44,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
+    borderColor: "rgba(59, 57, 57, 0.2)",
     paddingHorizontal: 12,
-    color: '#fff',
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    color: "#fff",
+    backgroundColor: "rgba(44, 43, 43, 0.06)",
     marginBottom: 12,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 18,
   },
   card: {
-    width: '90%',
-    alignItems: 'center',
-    backgroundColor: '#EEEEEE',
+    width: "90%",
+    alignItems: "center",
+    backgroundColor: "#EEEEEE",
     borderRadius: 16,
     paddingVertical: 20,
     height: 300,
     paddingHorizontal: 18,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.06,
     shadowRadius: 12,
     elevation: 6,
-    top:250,
+    top: 250,
   },
-  button: { backgroundColor: '#fff', paddingHorizontal: 18, paddingVertical: 10, borderRadius: 24 },
-  buttonText: { color: '#222', fontWeight: '600' },
-  error: { color: 'orange', marginBottom: 12 },
-})
+  button: {
+    backgroundColor: "#fff",
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    borderRadius: 24,
+  },
+  buttonText: { color: "#222", fontWeight: "600" },
+  error: { color: "orange", marginBottom: 12 },
+});
 
 

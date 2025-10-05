@@ -2,7 +2,7 @@ import { ThemedText } from '@/components/themed-text';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
 import { Stack, useRouter } from 'expo-router';
-import { StatusBar } from 'expo-status-bar'; // 👈 add this
+import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Linking, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -50,7 +50,7 @@ export default function ScanScreen() {
 
 
 
-  const onCancel = () => router.replace('/')
+  const onCancel = () => router.replace('/(tabs)');
   async function analyzeImageAsync(base64: string) {
     try {
       setIsAnalyzing(true)
@@ -110,7 +110,6 @@ export default function ScanScreen() {
   function toQueryFromTexts(frontText: string | null, backText: string | null): string {
     const combined = [frontText, backText].filter(Boolean).join(' ')
     if (!combined) return 'gold coin value'
-    // Keep it simple: use combined text plus the word "value" for pricing intent
     return `${combined} value`
   }
 
@@ -279,24 +278,22 @@ export default function ScanScreen() {
   }
 
   async function onDonePress() {
-    // Navigate to loading screen with the captured images to process
-    if (isNavigating) return
-    if (!frontBase64 || !backBase64) {
-      console.warn('Cannot proceed: missing one or both images')
-      return
-    }
-    try {
-      setIsNavigating(true)
-      console.log('[CoinVault] Staging payload and navigating to year input...')
-      const { putScanPayload } = await import('../lib/scanPayload')
-      const id = putScanPayload({ front: frontBase64, back: backBase64 })
-      console.log('[CoinVault] Payload id:', id)
-      router.push({ pathname: '/year', params: { id } })
-    } catch (e) {
-      console.warn('Failed to stage payload', e)
-      setIsNavigating(false)
-    }
+  if (isNavigating) return;
+  if (!frontBase64 || !backBase64) {
+    console.warn('Cannot proceed: missing one or both images');
+    return;
   }
+  try {
+    setIsNavigating(true);
+    const { putScanPayload } = await import('../lib/scanPayload');
+    const id = putScanPayload({ front: frontBase64, back: backBase64 });
+    router.push({ pathname: '/year', params: { id } });
+  } catch (e) {
+    console.warn('Failed to stage payload', e);
+    setIsNavigating(false);
+  }
+}
+
 
 
 
@@ -304,30 +301,12 @@ export default function ScanScreen() {
     <SafeAreaView style={styles.container}>
        <StatusBar style="light" backgroundColor="#ffffff" />
       <Stack.Screen options={{ headerShown: false }} />
-
-      {hasPermission === null ? (
-        <View style={styles.permissionCenter}>
-          <ThemedText style={styles.permissionText}>permission status unknown</ThemedText>
-          <TouchableOpacity onPress={manualRequest} style={styles.requestButton}><Text style={{color:'#fff'}}>Request Permission</Text></TouchableOpacity>
-          {manualRequestError && <Text style={{color:'orange', marginTop:8}}>{manualRequestError}</Text>}
-        </View>
-      ) : hasPermission === false ? (
-        <View style={styles.permissionCenter}>
-          <ThemedText style={styles.permissionText}>Camera permission is required</ThemedText>
-          <TouchableOpacity onPress={manualRequest} style={styles.requestButton}><Text style={{color:'#fff'}}>Request Permission</Text></TouchableOpacity>
-          <TouchableOpacity onPress={openSettings} style={[styles.requestButton, { marginTop: 8 }]}><Text style={{color:'#fff'}}>Open App Settings</Text></TouchableOpacity>
-          <TouchableOpacity onPress={openDevClientDocs} style={[styles.requestButton, { marginTop: 8 }]}><Text style={{color:'#fff'}}>How to get camera in Expo Go / Dev Client</Text></TouchableOpacity>
-          {manualRequestError && <Text style={{color:'orange', marginTop:8}}>{manualRequestError}</Text>}
-        </View>
-      ) : hasPermission ? (
         <>
           <CameraView
             ref={cameraRef}
             style={styles.camera}
             facing={cameraType}
             onBarcodeScanned={(evt) => {
-              // Intentionally disabled auto-advance to ensure we capture photos with base64
-              // Use the capture button to proceed
             }}
             enableTorch={torchOn}
             zoom={0.2}
@@ -360,25 +339,20 @@ export default function ScanScreen() {
             </View>
           )}
           
-          {/* Hidden capture button - invisible but functional */}
-          <TouchableOpacity 
-            onPress={onCapturePress} 
-            style={styles.hiddenCaptureButton}
-            disabled={isAnalyzing}
-          >
-            <View style={[styles.captureInner, isAnalyzing && { backgroundColor: '#999' }]} />
-          </TouchableOpacity>
+          {step !== 'done' && (
+            <TouchableOpacity 
+              onPress={onCapturePress} 
+              style={styles.hiddenCaptureButton}
+              disabled={isAnalyzing}
+            >
+              <View style={[styles.captureInner, isAnalyzing && { backgroundColor: '#999' }]} />
+            </TouchableOpacity>
+          )}
         </>
-      ) : (
-        <View style={styles.permissionCenter}>
-          <ThemedText style={styles.permissionText}>Camera not available</ThemedText>
-          <ThemedText style={[styles.permissionText, { marginTop: 8, fontSize: 12 }]}>If you're using Expo Go, it may not include the native camera module for this SDK. Try installing Expo Go from the App Store that matches your SDK, or build a dev client.</ThemedText>
-          <TouchableOpacity onPress={openDevClientDocs} style={[styles.requestButton, { marginTop: 8 }]}><Text style={{color:'#fff'}}>How to get camera in Expo Go / Dev Client</Text></TouchableOpacity>
-        </View>
-      )}
+       
 
 
-      <View style={styles.overlay} pointerEvents={'auto'}>
+      <View style={styles.overlay} pointerEvents={'box-none'}>
         <ThemedText type="title" style={styles.title}>
           {step === 'front' && 'Scan the front side of your coin'}
           {step === 'back' && 'Scan the back side of your coin'}
@@ -429,11 +403,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     alignItems: "center",
     flexDirection: "row",
-    justifyContent: "flex-end",
+    justifyContent: "flex-start",
     position: "absolute",
     top: 40,
-    left: 10,
-    zIndex: 30,
+    zIndex: 100,
   },
   closeButton: { padding: 8 },
   camera: { ...StyleSheet.absoluteFillObject, zIndex: 1 },

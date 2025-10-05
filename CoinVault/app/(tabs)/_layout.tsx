@@ -1,7 +1,7 @@
+import { Colors } from '@/constants/theme';
+import { Icon, Label, NativeTabs } from 'expo-router/unstable-native-tabs';
 import React from 'react';
 import { DynamicColorIOS, Platform } from 'react-native';
-import { NativeTabs, Icon, Label } from 'expo-router/unstable-native-tabs';
-import { Colors } from '@/constants/theme';
 
 export default function TabLayout() {
   const textColor = DynamicColorIOS({ light: Colors.light.text, dark: Colors.light.text });
@@ -13,7 +13,6 @@ export default function TabLayout() {
         <Label>Home</Label>
         {Platform.select({ ios: <Icon sf={{ default: 'house', selected: 'house.fill' }} />, android: <Icon sf="house" /> })}
       </NativeTabs.Trigger>
-
       <NativeTabs.Trigger name="explore">
         <Label>Collection</Label>
        {Platform.select({ 
