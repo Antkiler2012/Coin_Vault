@@ -1,12 +1,12 @@
-import { Image } from 'expo-image';
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
-import { StatusBar } from 'expo-status-bar'; // 👈 add this
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
-import { Link } from 'expo-router';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { useFonts, Inter_400Regular, Inter_700Bold } from '@expo-google-fonts/inter';
+import { Inter_400Regular, Inter_700Bold, useFonts } from '@expo-google-fonts/inter';
 import { LeagueSpartan_400Regular } from '@expo-google-fonts/league-spartan';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { Image } from 'expo-image';
+import { Link } from 'expo-router';
+import { StatusBar } from 'expo-status-bar'; // 👈 add this
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function HomeScreen() {
   const [fontsLoaded] = useFonts({
@@ -24,7 +24,7 @@ export default function HomeScreen() {
       <StatusBar style="dark" backgroundColor="#ffffff" />
 
       <ParallaxScrollView
-        headerBackgroundColor={{ light: '#ffffff', dark: '#ffffff' }}
+        headerBackgroundColor={{ light: "#ffffff", dark: "#ffffff" }}
         headerImage={<></>}
       >
         <View style={styles.searchRow}>
@@ -38,25 +38,28 @@ export default function HomeScreen() {
         <View style={styles.heroWrap}>
           <View style={styles.card}>
             <View style={styles.coinWrap} pointerEvents="none">
-              <Image source={require('@/assets/images/home-coin.png')} style={styles.coin} />
+              <Image
+                source={require("@/assets/images/home-coin.png")}
+                style={styles.coin}
+              />
             </View>
             <View style={styles.cardContentCenter}>
               <ThemedText type="title" style={styles.titleText}>
                 Identify your coin
               </ThemedText>
-              <ThemedText style={styles.subtitle}>Tap here to identify your coin</ThemedText>
+              <ThemedText style={styles.subtitle}>
+                Tap here to identify your coin
+              </ThemedText>
 
-              <Link href="/modal">
-                <Link.Trigger>
-                  <TouchableOpacity style={styles.scanButton} activeOpacity={0.9}>
-                    <View style={styles.scanIconBox}>
-                      <MaterialIcons name="crop-free" size={14} color="#fff" />
-                    </View>
-                    <ThemedText type="defaultSemiBold" style={styles.scanText}>
-                      Scan
-                    </ThemedText>
-                  </TouchableOpacity>
-                </Link.Trigger>
+              <Link href="/scan" asChild>
+                <TouchableOpacity style={styles.scanButton} activeOpacity={0.9}>
+                  <View style={styles.scanIconBox}>
+                    <MaterialIcons name="crop-free" size={14} color="#fff" />
+                  </View>
+                  <ThemedText type="defaultSemiBold" style={styles.scanText}>
+                    Scan
+                  </ThemedText>
+                </TouchableOpacity>
               </Link>
             </View>
           </View>
@@ -99,6 +102,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.06,
     shadowRadius: 12,
     elevation: 6,
+    top:60,
   },
   cardImage: {
     width: 72,
@@ -112,16 +116,17 @@ const styles = StyleSheet.create({
   searchRow: {
     paddingHorizontal: 16,
     paddingTop: 0,
-    width: '105%',
+    width: '100%',
   },
   searchBox: {
     backgroundColor: 'rgba(0,0,0,0.06)',
-    borderRadius: 20,
+    borderRadius: 100,
+    top: 20,
     paddingVertical: 8,
     paddingHorizontal: 12,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 20,
 
   },
   hamburger: {

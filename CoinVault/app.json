@@ -10,6 +10,10 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
+      ,"infoPlist": {
+        "NSCameraUsageDescription": "Camera access is required to scan coins.",
+        "NSMicrophoneUsageDescription": "Microphone access is required for video or audio capture."
+      }
     },
     "android": {
       "adaptiveIcon": {

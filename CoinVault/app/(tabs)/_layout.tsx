@@ -4,8 +4,8 @@ import { NativeTabs, Icon, Label } from 'expo-router/unstable-native-tabs';
 import { Colors } from '@/constants/theme';
 
 export default function TabLayout() {
-  const textColor = DynamicColorIOS({ light: Colors.light.text, dark: Colors.dark.text });
-  const tintColor = DynamicColorIOS({ light: Colors.light.tint, dark: Colors.dark.tint });
+  const textColor = DynamicColorIOS({ light: Colors.light.text, dark: Colors.light.text });
+  const tintColor = DynamicColorIOS({ light: Colors.light.tint, dark: Colors.light.tint });
 
   return (
     <NativeTabs labelStyle={{ color: textColor }} tintColor={tintColor}>
