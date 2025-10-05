@@ -357,11 +357,13 @@ export default function ScanScreen() {
           {step === 'front' && 'Scan the front side of your coin'}
           {step === 'back' && 'Scan the back side of your coin'}
           {step === 'done' && 'Scan complete'}
+        
         </ThemedText>
         <ThemedText style={styles.subtitle}>
           {step === 'done' 
             ? 'Both sides have been scanned successfully!' 
             : `Place the ${step === 'front' ? 'front' : 'back'} side of your coin inside the circle and tap anywhere to capture`}
+            Make sure the coin is well-lit and in focus.
         </ThemedText>
 
         <View style={styles.circleRow}>

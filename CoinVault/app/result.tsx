@@ -13,10 +13,11 @@ async function addCoin(title: string, avg: number | null, image?: string) {
 
 export default function ResultScreen() {
   const router = useRouter()
-  const params = useLocalSearchParams<{ title?: string; avg?: string; image?: string }>()
+  const params = useLocalSearchParams<{ title?: string; avg?: string; image?: string; note?: string }>()
   const title = useMemo(() => (typeof params.title === 'string' ? params.title : ''), [params.title])
   const avg = useMemo(() => (typeof params.avg === 'string' ? Number(params.avg) : NaN), [params.avg])
   const image = useMemo(() => (typeof params.image === 'string' ? params.image : ''), [params.image])
+  const note = useMemo(() => (typeof params.note === 'string' ? params.note : ''), [params.note])
   const [saving, setSaving] = useState(false)
 
   return (
@@ -31,6 +32,9 @@ export default function ResultScreen() {
         <ThemedText type="title" style={styles.title}>{title || 'Coin'}</ThemedText>
         {!Number.isNaN(avg) && (
           <ThemedText style={styles.value}>Estimated Average Value: ${avg.toFixed(2)}</ThemedText>
+        )}
+        {!!note && (
+          <ThemedText style={styles.note}>Note: {note === 'set' ? 'Query looks like a set/lot' : note === 'jewelry' ? 'Query may refer to jewelry' : note}</ThemedText>
         )}
 
         <View style={styles.buttonsRow}>
@@ -72,6 +76,7 @@ const styles = StyleSheet.create({
   hero: { width: 220, height: 220, borderRadius: 12, marginBottom: 16 },
   title: { color: '#2C2A2A', textAlign: 'center', marginBottom: 8, fontSize: 24, fontFamily: 'Inter_bold', fontWeight: '700', width: 440 },
   value: { color: '#6e6d6dff', marginBottom: 24, textAlign: 'center', fontFamily: 'Inter_medium', fontWeight: '500', fontSize: 13 },
+  note: { color: '#a67c00', marginBottom: 12, textAlign: 'center' },
   buttonsRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 12, marginTop: 8 },
   button: { backgroundColor: '#fff', paddingHorizontal: 18, paddingVertical: 10, borderRadius: 24, borderColor: '#222', borderWidth: 2 },
   buttonText: { color: '#2C2A2A', fontWeight: '600', fontSize: 14, fontFamily: 'Inter_medium' },

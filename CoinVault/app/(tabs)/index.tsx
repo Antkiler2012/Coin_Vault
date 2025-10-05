@@ -25,6 +25,8 @@ export default function HomeScreen() {
     if (!q || searching) return;
     setSearching(true);
     try {
+      const { verifyQueryWithGemini } = await import('../../lib/ai');
+      const verify = await verifyQueryWithGemini(q);
       const stats = await querySerpApiStats(q);
       if (!stats) return;
       const title = stats.top?.title || q;
@@ -36,6 +38,7 @@ export default function HomeScreen() {
         title,
         ...(typeof avgAdjusted === 'number' ? { avg: String(avgAdjusted) } : {}),
         ...(image ? { image } : {}),
+        ...(verify && verify.type ? { note: verify.type } : {}),
       }});
     } finally {
       setSearching(false);
@@ -159,7 +162,7 @@ const styles = StyleSheet.create({
   searchRow: {
     paddingHorizontal: 16,
     width: '100%',
-    
+    alignItems: 'center',
     bottom: 20,
   },
   searchBox: {
@@ -170,7 +173,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 20,
-
+    width: '105%',
   },
   hamburger: {
     width: 26,
@@ -206,6 +209,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     textAlign: 'center',
     width: 250,
+    marginBottom: 12,
   },
   scanIconPlaceholder: {
     width: 18,

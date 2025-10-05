@@ -85,6 +85,8 @@ export default function CollectionScreen() {
     if (!q || searching) return;
     setSearching(true);
     try {
+      const { verifyQueryWithGemini } = await import('../../lib/ai');
+      const verify = await verifyQueryWithGemini(q);
       const stats = await querySerpApiStats(q);
       if (!stats) return;
       const title = stats.top?.title || q;
@@ -95,6 +97,7 @@ export default function CollectionScreen() {
         title,
         ...(typeof avg === 'number' ? { avg: String(avg) } : {}),
         ...(image ? { image } : {}),
+        ...(verify && verify.type ? { note: verify.type } : {}),
       }});
     } finally {
       setSearching(false);
