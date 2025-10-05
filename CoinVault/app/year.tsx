@@ -2,6 +2,7 @@ import { ThemedText } from '@/components/themed-text'
 import { Inter_400Regular, Inter_700Bold, useFonts } from '@expo-google-fonts/inter'
 import { LeagueSpartan_400Regular } from '@expo-google-fonts/league-spartan'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
+import { StatusBar } from 'expo-status-bar'
 import React, { useMemo, useState } from 'react'
 import { KeyboardAvoidingView, Platform, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView, } from 'react-native-safe-area-context'
@@ -37,7 +38,10 @@ export default function YearScreen() {
   }
 
   return (
+    <>
+          <StatusBar style="dark" backgroundColor="#ffffff" />
     <SafeAreaView style={styles.container}>
+
       <Stack.Screen options={{ headerShown: false }} />
       <View style={styles.card}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.center}>
@@ -60,6 +64,7 @@ export default function YearScreen() {
       </KeyboardAvoidingView>
       </View>
     </SafeAreaView>
+    </>
   )
 }
 

@@ -21,6 +21,10 @@ export default function TabLayout() {
 })}
 
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="../settings">
+        <Label>Settings</Label>
+        {Platform.select({ ios: <Icon sf={{ default: 'gear', selected: 'gearshape.fill' }} />, android: <Icon sf="gear" /> })}
+      </NativeTabs.Trigger>
     </NativeTabs>
   );
 }

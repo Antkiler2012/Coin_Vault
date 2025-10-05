@@ -1,6 +1,7 @@
 import { ThemedText } from '@/components/themed-text'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { Link, Stack, useLocalSearchParams, useRouter } from 'expo-router'
+import { StatusBar } from 'expo-status-bar'
 import React, { useMemo, useState } from 'react'
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -19,6 +20,8 @@ export default function ResultScreen() {
   const [saving, setSaving] = useState(false)
 
   return (
+    <>
+      <StatusBar style="dark" backgroundColor="#ffffff" />
     <SafeAreaView style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
       <View style={styles.content}>
@@ -59,6 +62,7 @@ export default function ResultScreen() {
         </TouchableOpacity>
       </View>
     </SafeAreaView>
+      </>
   )
 }
 

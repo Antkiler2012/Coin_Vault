@@ -15,4 +15,8 @@ export function getScanPayload(id: string): ScanPayload | undefined {
   return cache.get(id)
 }
 
+export function clearScanPayloads(): void {
+  cache.clear()
+}
+
 

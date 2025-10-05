@@ -118,6 +118,9 @@ export default function CollectionScreen() {
           <TouchableOpacity onPress={onSubmitSearch} disabled={searching}>
             <MaterialIcons name="search" size={20} color="#666" />
           </TouchableOpacity>
+                <TouchableOpacity onPress={() => router.push('/settings')} >
+            <MaterialIcons name="settings" size={20} color="#666"/>
+          </TouchableOpacity>
         </View>
       </View>
 

@@ -1,5 +1,6 @@
 import { ThemedText } from '@/components/themed-text'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
+import { StatusBar } from 'expo-status-bar'
 import React, { useEffect, useMemo, useState } from 'react'
 import { ActivityIndicator, StyleSheet, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -266,6 +267,8 @@ export default function LoadingScreen() {
   }, [front, back, id, router])
 
   return (
+    <>
+     <StatusBar style="dark" backgroundColor="#ffffff" />
     <SafeAreaView style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
       <View style={styles.center}>
@@ -274,6 +277,7 @@ export default function LoadingScreen() {
         {!!error && <ThemedText style={styles.error}>{error}</ThemedText>}
       </View>
     </SafeAreaView>
+    </>
   )
 }
 
