@@ -2,7 +2,6 @@ example request:
 const { getJson } = require("serpapi");
 
 getJson({
-  api_key: "85b4d10ca3338977a32b63ce9665da1a81ad1095957e2c32dda9c4397e98854a",
   engine: "google",
   q: "2.5 peso gold coin value",
   google_domain: "google.com",
