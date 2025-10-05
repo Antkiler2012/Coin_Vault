@@ -7,8 +7,10 @@ import { Image } from 'expo-image';
 import { Link } from 'expo-router';
 import { StatusBar } from 'expo-status-bar'; // 👈 add this
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
+  const insets = useSafeAreaInsets();
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_700Bold,
@@ -22,7 +24,7 @@ export default function HomeScreen() {
   return (
     <>
       <StatusBar style="dark" backgroundColor="#ffffff" />
-
+      <View style={{ flex: 1, backgroundColor: "#fff", paddingTop: insets.top }}>
       <ParallaxScrollView
         headerBackgroundColor={{ light: "#ffffff", dark: "#ffffff" }}
         headerImage={<></>}
@@ -65,6 +67,7 @@ export default function HomeScreen() {
           </View>
         </View>
       </ParallaxScrollView>
+      </View>
     </>
   );
 }
@@ -115,13 +118,12 @@ const styles = StyleSheet.create({
   },
   searchRow: {
     paddingHorizontal: 16,
-    paddingTop: 0,
     width: '100%',
+    bottom: 20,
   },
   searchBox: {
     backgroundColor: 'rgba(0,0,0,0.06)',
     borderRadius: 100,
-    top: 20,
     paddingVertical: 8,
     paddingHorizontal: 12,
     flexDirection: 'row',

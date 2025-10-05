@@ -1,10 +1,11 @@
-import { ThemedText } from '@/components/themed-text'
-import MaterialIcons from '@expo/vector-icons/MaterialIcons'
-import { CameraType, CameraView, useCameraPermissions } from 'expo-camera'
-import { Stack, useRouter } from 'expo-router'
-import React, { useEffect, useRef, useState } from 'react'
-import { Animated, Easing, Image, Linking, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { ThemedText } from '@/components/themed-text';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
+import { Stack, useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar'; // 👈 add this
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Easing, Image, Linking, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ScanScreen() {
   const router = useRouter()
@@ -22,6 +23,7 @@ export default function ScanScreen() {
   const [backBase64, setBackBase64] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [torchOn, setTorchOn] = useState(false)
+  const [isNavigating, setIsNavigating] = useState(false)
 
   useEffect(() => {
     if (!cameraPermission) return
@@ -278,17 +280,29 @@ export default function ScanScreen() {
 
   async function onDonePress() {
     // Navigate to loading screen with the captured images to process
+    if (isNavigating) return
     if (!frontBase64 || !backBase64) {
       console.warn('Cannot proceed: missing one or both images')
       return
     }
-    router.push({ pathname: '/loading', params: { front: frontBase64, back: backBase64 } })
+    try {
+      setIsNavigating(true)
+      console.log('[CoinVault] Staging payload and navigating to year input...')
+      const { putScanPayload } = await import('../lib/scanPayload')
+      const id = putScanPayload({ front: frontBase64, back: backBase64 })
+      console.log('[CoinVault] Payload id:', id)
+      router.push({ pathname: '/year', params: { id } })
+    } catch (e) {
+      console.warn('Failed to stage payload', e)
+      setIsNavigating(false)
+    }
   }
 
 
 
   return (
     <SafeAreaView style={styles.container}>
+       <StatusBar style="light" backgroundColor="#ffffff" />
       <Stack.Screen options={{ headerShown: false }} />
 
       {hasPermission === null ? (
@@ -312,10 +326,12 @@ export default function ScanScreen() {
             style={styles.camera}
             facing={cameraType}
             onBarcodeScanned={(evt) => {
-              if (step === 'front') setStep('back')
-              else if (step === 'back') setStep('done')
+              // Intentionally disabled auto-advance to ensure we capture photos with base64
+              // Use the capture button to proceed
             }}
             enableTorch={torchOn}
+            zoom={0.2}
+            ratio="4:3"
           />
           <View style={styles.headerRow} pointerEvents="box-none">
             <TouchableOpacity
@@ -323,12 +339,14 @@ export default function ScanScreen() {
                 setCameraType((t) => (t === 'back' ? 'front' : 'back'))
               }}
               style={[styles.closeButton, { marginRight: 10 }]}
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             >
               <MaterialIcons name="flip-camera-ios" size={22} color="#fff" />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setTorchOn((v) => !v)}
               style={[styles.closeButton, { marginRight: 10 }]}
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             >
               <MaterialIcons name={torchOn ? 'flash-on' : 'flash-off'} size={22} color="#fff" />
             </TouchableOpacity>
@@ -392,7 +410,7 @@ export default function ScanScreen() {
         {step === 'done' && (
           <View style={styles.doneBox}>
             <ThemedText style={styles.doneText}>Both sides scanned</ThemedText>
-            <TouchableOpacity onPress={onDonePress} style={styles.doneLink}>
+            <TouchableOpacity onPress={onDonePress} style={[styles.doneLink, (!frontBase64 || !backBase64 || isNavigating) && { opacity: 0.5 }]} disabled={!frontBase64 || !backBase64 || isNavigating}>
               <Text style={styles.doneLinkText}>Done</Text>
             </TouchableOpacity>
           </View>
@@ -413,9 +431,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-end",
     position: "absolute",
-    top: 12,
-    right: 12,
-    left: 12,
+    top: 40,
+    left: 10,
     zIndex: 30,
   },
   closeButton: { padding: 8 },
@@ -427,18 +444,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     zIndex: 40,
   },
-  title: { color: "#fff", fontSize: 20, textAlign: "center", marginTop: 6 },
+  title: { color: "#fff", fontSize: 20, textAlign: "center" },
   subtitle: {
     color: "#ddd",
     textAlign: "center",
     marginTop: 8,
-    marginBottom: 28,
+    marginBottom: 40,
   },
   circleRow: {
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
     height: 260,
+    marginBottom: 100,
   },
   pulse: {
     position: "absolute",
@@ -500,14 +518,15 @@ const styles = StyleSheet.create({
   },
   previewWrap: {
     position: "absolute",
-    top: 120,
-    left: 0,
+    bottom: 20,
+    left: 20,
     right: 0,
-    alignItems: "center",
+    alignItems: "flex-start",
     zIndex: 20,
   },
   previewImage: {
-    bottom: 40,
+    alignItems: "center",
+    justifyContent: "center",
     width: 110,
     height: 110,
     borderRadius: 12,
